@@ -1,4 +1,4 @@
-<div class="span-24">
+<div>
 	<form action="{$smarty.const.KERNEL_PKG_URI}admin/index.php?page=spamurai" method="POST">
 		<input type="hidden" name="page" value="{$smarty.request.page}" />
 			<div class="row">
