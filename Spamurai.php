@@ -29,7 +29,7 @@ function spamurai_content_verify($pObject, $pParamHash){
 			$akismet->setCommentContent( $checkString );
 			if($akismet->isCommentSpam()){
 				$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date) VALUES ( ?, ?, ?, ?, ? )";
-				$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], !empty($pParamHash['comment_title'])?substr($pParamHash['comment_title'],0,255):'', $pParamHash['comment_data'], time() );
+				$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], !empty($pParamHash['comment_title'])?substr($pParamHash['comment_title'],0,255):'', $checkString, time() );
 				$gBitSystem->mDb->query( $insertSql, $bindVars );
 				$pObject->mErrors['spam'] = "This comment has been blocked as spam"; 			}
 		}
