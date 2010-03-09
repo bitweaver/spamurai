@@ -16,22 +16,31 @@ function spamurai_content_verify($pObject, $pParamHash){
 			$userInfo = $gBitUser->getUserInfo( array ('user_id' => $pParamHash['user_id'] ) );	
 			$akismet->setCommentAuthor( $userInfo['real_name'].$userInfo['login'] );
 			$akismet->setCommentAuthorEmail($userInfo['email']);
-			$checkString = '';
+			$checkTitle = '';
 			if( !empty( $pParamHash['title'] ) ) {
-				$checkString .= $pParamHash['title'];
+				$checkTitle .= $pParamHash['title'];
 			}
+			if( !empty( $pParamHash['comment_title'] ) ) {
+				$checkTitle .= $pParamHash['comment_title'];
+			}
+			$checkString = '';
 			if( !empty( $pParamHash['edit'] ) ) {
 				$checkString .= $pParamHash['edit'];
 			}
 			if( !empty( $pParamHash['comment_data'] ) ) {
 				$checkString .= $pParamHash['comment_data'];
 			}
-			$akismet->setCommentContent( $checkString );
-			if($akismet->isCommentSpam()){
-				$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date) VALUES ( ?, ?, ?, ?, ? )";
-				$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], !empty($pParamHash['comment_title'])?substr($pParamHash['comment_title'],0,255):'', $checkString, time() );
-				$gBitSystem->mDb->query( $insertSql, $bindVars );
-				$pObject->mErrors['spam'] = "This comment has been blocked as spam"; 			}
+			if( !empty( $checkString ) || !empty( $checkTitle ) ) {
+bit_log_error( 'checking '.$pObject->getContentType().' '.$userInfo['user_id'] );
+				$akismet->setCommentContent( $checkTitle.$checkString );
+				if($akismet->isCommentSpam()){
+bit_log_error( 'SPAM '.$pObject->getContentType().' '.$userInfo['user_id'] );
+					$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date) VALUES ( ?, ?, ?, ?, ? )";
+					$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], substr( $checkTitle, 0, 255 ), $checkString, time() );
+					$gBitSystem->mDb->query( $insertSql, $bindVars );
+					$pObject->mErrors['spam'] = "This comment has been blocked as spam"; 			
+				}
+			}
 		}
 	}
 }
