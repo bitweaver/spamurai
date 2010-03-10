@@ -2,6 +2,7 @@
 
 $tables = array(
   'spamurai_log' => "
+	ip C(39) NOTNULL,
     user_id I4 NOTNULL,
     email C(255) NOTNULL,
 	subject C(255),

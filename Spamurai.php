@@ -35,8 +35,8 @@ bit_log_error( 'checking '.$pObject->getContentType().' '.$userInfo['user_id'] )
 				$akismet->setCommentContent( $checkTitle.$checkString );
 				if($akismet->isCommentSpam()){
 bit_log_error( 'SPAM '.$pObject->getContentType().' '.$userInfo['user_id'] );
-					$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date) VALUES ( ?, ?, ?, ?, ? )";
-					$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], substr( $checkTitle, 0, 255 ), $checkString, time() );
+					$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date, ip) VALUES ( ?, ?, ?, ?, ?, ? )";
+					$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], substr( $checkTitle, 0, 255 ), $checkString, time(), $_SERVER['REMOTE_ADDR'] );
 					$gBitSystem->mDb->query( $insertSql, $bindVars );
 					$pObject->mErrors['spam'] = "This comment has been blocked as spam"; 			
 				}
