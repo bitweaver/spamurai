@@ -9,7 +9,7 @@ require_once (SPAMURAI_PKG_PATH.'Akismet.class.php');
 
 function spamurai_content_verify($pObject, $pParamHash){
 	global $gBitUser, $gBitSystem;	
-	if( $gBitSystem->isPackageActive( 'spamurai' ) && is_a($pObject,'LibertyContent') ){ 
+	if( $gBitSystem->isPackageActive( 'spamurai' ) && (is_a($pObject,'LibertyComment') || is_a($pObject,'BitBlogPost') || is_a($pObject,'BitUser')) ){ 
 		$akismet = new Akismet( BOARDS_PKG_URI , $gBitSystem->getConfig('spamurai_api_key') );
 
 		if( !empty($pParamHash) && !empty($akismet) ) {
@@ -31,10 +31,11 @@ function spamurai_content_verify($pObject, $pParamHash){
 				$checkString .= $pParamHash['comment_data'];
 			}
 			if( !empty( $checkString ) || !empty( $checkTitle ) ) {
-bit_log_error( 'checking '.$pObject->getContentType().' '.$userInfo['user_id'] );
 				$akismet->setCommentContent( $checkTitle.$checkString );
 				if($akismet->isCommentSpam()){
-bit_log_error( 'SPAM '.$pObject->getContentType().' '.$userInfo['user_id'] );
+					if( $gBitUser->isRegistered() ) {
+						bit_log_error( 'SPAM '.$pObject->getContentType().' for user '.$userInfo['user_id'] );
+					}
 					$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date, ip) VALUES ( ?, ?, ?, ?, ?, ? )";
 					$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], substr( $checkTitle, 0, 255 ), $checkString, time(), $_SERVER['REMOTE_ADDR'] );
 					$gBitSystem->mDb->query( $insertSql, $bindVars );
