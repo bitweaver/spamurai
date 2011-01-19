@@ -11,7 +11,7 @@ function spamurai_content_verify($pObject, $pParamHash){
 	global $gBitUser, $gBitSystem;	
 	// hardcode limit spamurai to BitBlogPost and BitUser. more enterprising person can write some cool admin config. 
 	// for now, these are the limits cause doing everything is slow and produces many false positives for content with limited text
-	if( $gBitSystem->isPackageActive( 'spamurai' ) && (is_a($pObject,'LibertyComment') || is_a($pObject,'BitBlogPost') || is_a($pObject,'BitUser')) ){ 
+	if( $gBitSystem->isPackageActive( 'spamurai' ) && !$gBitUser->hasPermission('p_spamurai_moderate') && (is_a($pObject,'LibertyComment') || is_a($pObject,'BitBlogPost') || is_a($pObject,'BitUser')) ){ 
 		$akismet = new Akismet( BOARDS_PKG_URI , $gBitSystem->getConfig('spamurai_api_key') );
 
 		if( !empty($pParamHash) && !empty($akismet) ) {
