@@ -36,7 +36,7 @@ function spamurai_content_verify($pObject, $pParamHash){
 				$akismet->setCommentContent( $checkTitle.$checkString );
 				if($akismet->isCommentSpam()){
 					if( $gBitUser->isRegistered() ) {
-						bit_log_error( 'SPAM '.$pObject->getContentType().' for user '.$userInfo['user_id'] );
+						bit_error_log( 'SPAM '.$pObject->getContentType().' for user '.$userInfo['user_id'] );
 					}
 					$insertSql = "INSERT INTO ".BIT_DB_PREFIX."spamurai_log (user_id, email, subject, data, posted_date, ip) VALUES ( ?, ?, ?, ?, ?, ? )";
 					$bindVars = array ( $pParamHash['user_id'], $userInfo['email'], substr( $checkTitle, 0, 255 ), $checkString, time(), $_SERVER['REMOTE_ADDR'] );
