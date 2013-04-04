@@ -5,6 +5,6 @@
 			<div class="formlabel"> Spamurai API Key </div>
 			<div class="forminput"><input type="textbox" name="spamurai_api_key" value="{$apiKey}"/> </div>
 			</div>
-		 <input type="submit" value="Submit" />
+		 <input type="submit" class="btn" value="Submit" />
 	</form>
 </div>
